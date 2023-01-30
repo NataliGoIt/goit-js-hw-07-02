@@ -1,7 +1,8 @@
 import { galleryItems } from "./gallery-items.js";
 const gallery = document.querySelector(".gallery");
-console.log(galleryItems);
-const instance = basicLightbox.create(`<img src="" class="gallery__image">`);
+const instance = basicLightbox.create(`
+<img src="" class="gallery__image">`);
+
 function galleryMarkUp(items) {
   const markup = items
     .map(
@@ -9,7 +10,7 @@ function galleryMarkUp(items) {
         preview,
         original,
         description,
-      } = items) => `<a class="gallery__link" href="">
+      } = items) => `<a class="gallery__link" href="${original}">
     <img
       class="gallery__image"
       src="${preview}"
@@ -19,17 +20,27 @@ function galleryMarkUp(items) {
   </a>`
     )
     .join("");
-  // console.log(markup);
   gallery.innerHTML = markup;
 }
 galleryMarkUp(galleryItems);
 gallery.addEventListener("click", onShow);
+
 function onShow(e) {
   e.preventDefault();
-  // console.log(e.target);
-  if (e.target !== ".img") {
+  if (e.target.nodeName !== "IMG") {
     return;
   }
+
+  const img = instance.element().querySelector(".gallery__image");
+  img.src = e.target.dataset.source;
+
   instance.show();
-  console.log(e.target);
+  onClose();
+}
+function onClose() {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      instance.close();
+    }
+  });
 }
